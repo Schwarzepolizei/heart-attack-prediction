@@ -6,12 +6,29 @@
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-    <h1>Результаты прогноза</h1>
-    <ul>
-    {% for patient_id, pred in results %}
-        <li>Пациент {{ patient_id }}: {{ pred }}</li>
-    {% endfor %}
-</ul>
+    <h1>Результаты прогноза сердечного приступа</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID пациента</th>
+                <th>Прогноз</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for patient_id, pred in results %}
+            {% if pred == 0 %}
+                <tr class="low-risk">
+            {% elif pred == 1 %}
+                <tr class="high-risk">
+            {% endif %}
+                <td>{{ patient_id }}</td>
+                <td>{{ pred }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
     <a href="/">Назад</a>
 </body>
 </html>

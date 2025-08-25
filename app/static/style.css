@@ -1,24 +1,44 @@
 body {
     font-family: Arial, sans-serif;
     margin: 40px;
-    background-color: #f9f9f9;
+    background-color: #f4f4f4;
 }
 
-h1, h2 {
+h1 {
     color: #333;
 }
 
-form input[type="file"] {
-    margin-top: 10px;
+table {
+    width: 70%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background-color: #fff;
 }
 
-form input[type="submit"] {
-    margin-top: 10px;
-    padding: 5px 10px;
+th, td {
+    padding: 12px;
+    border: 1px solid #ccc;
+    text-align: center;
 }
-.result {
+
+th {
+    background-color: #e8e8e8;
+}
+
+tr.low-risk {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+
+tr.high-risk {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+a {
+    display: inline-block;
     margin-top: 20px;
-    padding: 10px;
-    background-color: #e0ffe0;
-    border: 1px solid #b2ffb2;
+    text-decoration: none;
+    color: #007bff;
 }
