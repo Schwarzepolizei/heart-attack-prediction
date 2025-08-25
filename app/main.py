@@ -1,5 +1,6 @@
 from fastapi import FastAPI, UploadFile, File
 from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi import Request
 from .schemas import PatientData
@@ -8,6 +9,8 @@ import pandas as pd
 
 
 app = FastAPI(title="Heart Attack Risk Prediction API")
+
+app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
 templates = Jinja2Templates(directory="app/templates")
 
@@ -18,10 +21,21 @@ async def main_page(request: Request):
 @app.post("/upload-csv", response_class=HTMLResponse)
 async def upload_csv(request: Request, file: UploadFile = File(...)):
     df = pd.read_csv(file.file)
-    predictions = predict_batch(df)
-    return templates.TemplateResponse("results.html", {"request": request, "predictions": predictions})
+    ids = df["id"].values  
+    X = df.drop(columns=["id"])  
+    
+    predictions = predict_batch(X)  
+    
+    results = list(zip(ids, predictions))
+    
+    return templates.TemplateResponse("results.html", {"request": request, "results": results})
+
 
 @app.post("/predict")
-def predict_risk(patient: PatientData):
-    prediction = predict_single(patient.dict())
-    return {"prediction": prediction}
+def predict_risk(patient: dict):
+    patient_id = patient["id"]
+    patient_data = {k:v for k,v in patient.items() if k != "id"}  
+    
+    prediction = predict_single(patient_data)
+    return {"id": patient_id, "prediction": prediction}
+
