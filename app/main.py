@@ -39,5 +39,3 @@ async def upload_csv(request: Request, file: UploadFile = File(...)):
     
     return templates.TemplateResponse("results.html", {"request": request, "results": results})
 
-
-
