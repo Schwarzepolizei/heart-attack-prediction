@@ -3,14 +3,15 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi import Request
-from .schemas import PatientData
-from .model import predict_single, predict_batch
+from .model import predict_batch
 import pandas as pd
+import io
+
 
 
 app = FastAPI(title="Heart Attack Risk Prediction API")
 
-app.mount("/static", StaticFiles(directory="app/static"), name="static")
+app.mount("/static", StaticFiles(directory=r"c:\Users\schwa\Projects\heart attack prediction\app\static"), name="static")
 
 templates = Jinja2Templates(directory="app/templates")
 
@@ -20,22 +21,23 @@ async def main_page(request: Request):
 
 @app.post("/upload-csv", response_class=HTMLResponse)
 async def upload_csv(request: Request, file: UploadFile = File(...)):
-    df = pd.read_csv(file.file)
+    contents = await file.read()  
+    df = pd.read_csv(io.BytesIO(contents))  
+    cat_features = [
+        'diabetes', 'family_history', 'smoking', 'obesity',
+        'alcohol_consumption', 'diet', 'previous_heart_problems',
+        'medication_use', 'stress_level', 'physical_activity_days_per_week', 'gender'
+    ]
+    for col in cat_features:
+        if col in df.columns:
+            df[col] = df[col].fillna(0).astype(float).round().astype(int).astype(str)
     ids = df["id"].values  
-    X = df.drop(columns=["id"])  
+    X = df.drop(columns=["id", "ck-mb", "troponin"])  
     
     predictions = predict_batch(X)  
-    
     results = list(zip(ids, predictions))
     
     return templates.TemplateResponse("results.html", {"request": request, "results": results})
 
 
-@app.post("/predict")
-def predict_risk(patient: dict):
-    patient_id = patient["id"]
-    patient_data = {k:v for k,v in patient.items() if k != "id"}  
-    
-    prediction = predict_single(patient_data)
-    return {"id": patient_id, "prediction": prediction}
 
