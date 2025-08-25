@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Heart Attack Risk Prediction Results</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <h1>Результаты прогноза</h1>
+    <ul>
+        {% for i, pred in enumerate(predictions) %}
+            <li>Пациент {{ i+1 }}: {{ pred }}</li>
+        {% endfor %}
+    </ul>
+    <a href="/">Назад</a>
+</body>
+</html>
